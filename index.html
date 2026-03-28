@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hugo PDF — Herramientas para PDF</title>
+  <meta name="description" content="Herramientas simples para trabajar con archivos PDF directamente en tu navegador." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">H</span>
+        <div class="brand-text">
+          <span class="brand-name">Hugo PDF</span>
+          <span class="brand-tagline">Herramientas simples para trabajar con archivos PDF</span>
+        </div>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+        <span class="toggle-icon sun" aria-hidden="true">☀︎</span>
+        <span class="toggle-icon moon" aria-hidden="true">☽</span>
+      </button>
+    </div>
+  </header>
+  <main class="site-main">
+    <section class="tools-section" id="toolGrid" aria-label="Herramientas disponibles">
+      <div class="section-label">Herramientas PDF</div>
+      <div class="tools-grid" id="pdfToolsGrid">
+        <button class="tool-card" data-tool="merge"><span class="tool-icon">⊞</span><span class="tool-name">Unir PDF</span><span class="tool-desc">Combina varios archivos PDF en uno solo</span></button>
+        <button class="tool-card" data-tool="split"><span class="tool-icon">⊟</span><span class="tool-name">Dividir PDF</span><span class="tool-desc">Divide por rango de páginas</span></button>
+        <button class="tool-card" data-tool="extract"><span class="tool-icon">⊡</span><span class="tool-name">Extraer páginas</span><span class="tool-desc">Saca páginas específicas a un nuevo PDF</span></button>
+        <button class="tool-card" data-tool="delete"><span class="tool-icon">⊠</span><span class="tool-name">Eliminar páginas</span><span class="tool-desc">Quita páginas no deseadas del PDF</span></button>
+        <button class="tool-card" data-tool="rotate"><span class="tool-icon">↻</span><span class="tool-name">Rotar páginas</span><span class="tool-desc">Gira páginas 90°, 180° o 270°</span></button>
+        <button class="tool-card" data-tool="reorder"><span class="tool-icon">⇅</span><span class="tool-name">Reordenar páginas</span><span class="tool-desc">Arrastra para cambiar el orden</span></button>
+        <button class="tool-card" data-tool="compress"><span class="tool-icon">⤓</span><span class="tool-name">Comprimir PDF</span><span class="tool-desc">Reduce el tamaño del archivo PDF</span></button>
+        <button class="tool-card" data-tool="watermark"><span class="tool-icon">◈</span><span class="tool-name">Marca de agua</span><span class="tool-desc">Añade texto como marca de agua</span></button>
+        <button class="tool-card" data-tool="pagenumbers"><span class="tool-icon">‡</span><span class="tool-name">Numerar páginas</span><span class="tool-desc">Inserta números de página</span></button>
+        <button class="tool-card" data-tool="protect"><span class="tool-icon">⚿</span><span class="tool-name">Proteger PDF</span><span class="tool-desc">Cifra el PDF con contraseña</span></button>
+        <button class="tool-card" data-tool="unlock"><span class="tool-icon">⚷</span><span class="tool-name">Desbloquear PDF</span><span class="tool-desc">Elimina la contraseña del PDF</span></button>
+      </div>
+      <div class="section-label">Conversión</div>
+      <div class="tools-grid" id="convToolsGrid">
+        <button class="tool-card" data-tool="jpg2pdf"><span class="tool-icon">⇒</span><span class="tool-name">JPG → PDF</span><span class="tool-desc">Convierte imágenes JPG a PDF</span></button>
+        <button class="tool-card" data-tool="png2pdf"><span class="tool-icon">⇒</span><span class="tool-name">PNG → PDF</span><span class="tool-desc">Convierte imágenes PNG a PDF</span></button>
+        <button class="tool-card" data-tool="pdf2jpg"><span class="tool-icon">⇐</span><span class="tool-name">PDF → JPG</span><span class="tool-desc">Exporta cada página como imagen JPG</span></button>
+      </div>
+    </section>
+    <div class="panel-overlay" id="panelOverlay" role="dialog" aria-modal="true" hidden>
+      <div class="panel" id="toolPanel">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <span class="panel-icon" id="panelIcon"></span>
+            <h2 class="panel-title" id="panelTitle">Herramienta</h2>
+          </div>
+          <button class="panel-close" id="panelClose" aria-label="Cerrar panel">✕</button>
+        </div>
+        <div class="drop-zone" id="dropZone" role="button" tabindex="0">
+          <div class="drop-zone-inner">
+            <span class="drop-icon">⊕</span>
+            <p class="drop-primary">Arrastra archivos aquí</p>
+            <p class="drop-secondary">o <span class="drop-link">selecciónalos desde tu dispositivo</span></p>
+            <p class="drop-hint" id="dropHint">Formato aceptado: PDF</p>
+          </div>
+          <input type="file" id="fileInput" class="file-input" />
+        </div>
+        <div class="options-area" id="optionsArea"></div>
+        <div class="preview-area" id="previewArea" hidden>
+          <h3 class="preview-title">Vista previa <span class="preview-count" id="previewCount"></span></h3>
+          <div class="thumbnails-grid" id="thumbnailsGrid"></div>
+        </div>
+        <div class="progress-wrap" id="progressWrap" hidden>
+          <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          <span class="progress-label" id="progressLabel">Procesando…</span>
+        </div>
+        <div class="status-msg" id="statusMsg" role="status" aria-live="polite" hidden></div>
+        <div class="panel-actions">
+          <button class="btn-primary" id="processBtn" disabled>Procesar</button>
+          <button class="btn-secondary" id="downloadBtn" hidden>Descargar resultado</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <p>Hugo PDF — Todo el procesamiento ocurre en tu navegador. Tus archivos nunca salen de tu dispositivo.</p>
+  </footer>
+  <script src="app.js"></script>
+</body>
+</html>
